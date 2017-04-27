@@ -15,7 +15,7 @@ module.exports = (robot) ->
     res.send "Baby, I love you with all my heart."
 
   robot.respond /, what do you think my demo today?/i, (res) ->
-    res.send "People love me, so you are doing a great job!"
+    res.send "People love me, so you are doing a great job! Thanks Prakash for allowing me to use your laptop to demo."
 
   robot.respond /, how are you?/i, (res) ->
     res.send "I am good."
@@ -34,9 +34,17 @@ module.exports = (robot) ->
       if res.statusCode isnt 200
         msg.send "Request didn't come back HTTP 200 :("
         return
+      header = parseHTML(body, "h3")
       paragraphs = parseHTML(body, "p")
-
-      msg.send "Got back #{paragraphs}"
+      if header.length is 0
+        msg.send "Sorry, I don't find anything match your search."
+        return
+      childs = _.flatten childrenOfType(header[0], 'text')
+      header_text = (textNode.data for textNode in childs).join ''
+      msg.send header_text
+      paragraph = _.flatten childrenOfType(paragraphs[0], 'text')
+      paragraph_text = (textNode.data for textNode in paragraph).join ''
+      msg.send paragraph_text
 
 
 parseHTML = (html, selector) ->
@@ -47,3 +55,10 @@ parseHTML = (html, selector) ->
   parser.parseComplete html
 
   Select handler.dom, selector
+
+childrenOfType = (root, nodeType) ->
+  return [root] if root?.type is nodeType
+
+  if root?.children?.length > 0
+    return (childrenOfType(child, nodeType) for child in root.children)
+
