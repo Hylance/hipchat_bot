@@ -5,6 +5,7 @@
   "author": "Shuheng <sguo@expedia.com>",
   "description": "This robot is to help doing many auto tasks to free package developers",
   "dependencies": {
+    "htmlparser": "^1.7.7",
     "hubot": "^2.19.0",
     "hubot-diagnostics": "0.0.1",
     "hubot-google-images": "^0.2.6",
@@ -16,8 +17,12 @@
     "hubot-pugme": "^0.1.0",
     "hubot-redis-brain": "0.0.3",
     "hubot-rules": "^0.1.1",
+    "hubot-hipchat2": "1.2.2",
     "hubot-scripts": "^2.17.2",
-    "hubot-shipit": "^0.2.0"
+    "hubot-shipit": "^0.2.0",
+    "soupselect": "^0.2.0",
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.3.4"
   },
   "engines": {
     "node": "0.10.x"
