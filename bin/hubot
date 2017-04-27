@@ -4,5 +4,6 @@ set -e
 
 npm install
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
-
+#!export HUBOT_HIPCHAT_JID="28219_3151301@chat.hipchat.com"
+#!export HUBOT_HIPCHAT_PASSWORD="Gsh580626!"
 exec node_modules/.bin/hubot --name "Jawa_Bot" "$@"
