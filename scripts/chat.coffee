@@ -44,7 +44,7 @@ module.exports = (robot) ->
       msg.send header_text
       paragraph = _.flatten childrenOfType(paragraphs[0], 'text')
       paragraph_text = (textNode.data for textNode in paragraph).join ''
-      msg.send paragraph_text
+      msg.send "/code " + paragraph_text
 
 
 parseHTML = (html, selector) ->
