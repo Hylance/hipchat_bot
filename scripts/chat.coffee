@@ -18,7 +18,7 @@ module.exports = (robot) ->
     res.send "People love me, so you are doing a great job! Thanks Prakash for allowing me to use your laptop to demo."
 
   robot.respond /, how are you?/i, (res) ->
-    res.send "I am good."
+    res.send "I am good. Thanks for asking."
 
   robot.respond /, what is (.*)/i, (msg) ->
     getTerm msg, msg.match[1]
