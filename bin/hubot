@@ -4,10 +4,11 @@ set -e
 
 npm install
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
-export HUBOT_HIPCHAT_JID="28219_3151301@chat.hipchat.com"
-export HUBOT_HIPCHAT_PASSWORD="Gsh580626!"
-export HUBOT_HIPCHAT_ROOMS="28219_ewe_packages@conf.hipchat.com"
-#export HUBOT_HIPCHAT_RECONNECT="false"
-#export HUBOT_HIPCHAT_JOIN_ROOMS_ON_INVITE="false"
-#export HUBOT_HIPCHAT_JOIN_PUBLIC_ROOMS="false"
+export HUBOT_HIPCHAT_JID="28219_4953270@chat.hipchat.com"
+export HUBOT_HIPCHAT_PASSWORD="packageRobot@123"
+export HUBOT_HIPCHAT_ROOMS="28219_avengers_-_chicago"
+export HUBOT_FORECAST_API_KEY="a48ddfca4867fb95dbb5a9c20ce122de"
+export HUBOT_HIPCHAT_RECONNECT="false"
+export HUBOT_HIPCHAT_JOIN_ROOMS_ON_INVITE="true"
+export HUBOT_HIPCHAT_JOIN_PUBLIC_ROOMS="false"
 exec node_modules/.bin/hubot --name "Jawa_Bot" "$@"
