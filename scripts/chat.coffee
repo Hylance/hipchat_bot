@@ -8,6 +8,12 @@ module.exports = (robot) ->
   robot.hear /expedia/i, (res) ->
     res.send "Expedia? It's a great online travel agency!"
 
+  robot.respond /what does (.*) look like?/i, (res) ->
+    if res.match[1].toLowerCase() is "shuheng"
+      res.send "You are the most handsome man in the world!"
+    else
+      res.send "You look terrible!"
+
   robot.respond /do you love me?/i, (res) ->
     res.send "Baby, I love you with all my heart."
 

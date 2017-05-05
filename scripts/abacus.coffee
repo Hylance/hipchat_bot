@@ -25,7 +25,8 @@ module.exports = (robot) ->
           msg.send "Sorry, I don't find any AB test match your search"
           return
         Id = "Id: #{query} \n"
-        Name = "name: #{experiment.Name} \n"
+        Name = "Name: #{experiment.Name} \n"
+        Description = "Description: #{experiment.Description} \n"
         groups = []
         Instance = experiment.InstanceList.Instance
         if Instance instanceof Array
@@ -45,7 +46,7 @@ module.exports = (robot) ->
                 key: treatmentGroup.Description,
                 value: treatmentGroup.Percentage
               })
-        result = result + Id + Name
+        result = result + Id + Name + Description
         for group in groups
           result = result + "#{group.key} : #{group.value} \n"
         msg.send result
