@@ -10,9 +10,9 @@ module.exports = (robot) ->
 
   robot.respond /what does (.*) look like?/i, (res) ->
     if res.match[1].toLowerCase() is "shuheng"
-      res.send "You are the most handsome man in the world!"
+      res.send "#{res.match[1].toLowerCase()} is the most handsome man in the world!"
     else
-      res.send "You look terrible!"
+      res.send "#{res.match[1].toLowerCase()} looks terrible!"
 
   robot.respond /do you love me?/i, (res) ->
     res.send "Baby, I love you with all my heart."
