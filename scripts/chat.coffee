@@ -34,17 +34,24 @@ module.exports = (robot) ->
       if res.statusCode isnt 200
         msg.send "Request didn't come back HTTP 200 :("
         return
-      header = parseHTML(body, "h3")
-      paragraphs = parseHTML(body, "p")
-      if header.length is 0
+      contents = parseHTML(body, ".panel-default")
+      if contents.length is 1
         msg.send "Sorry, I don't find anything match your search."
         return
-      childs = _.flatten childrenOfType(header[0], 'text')
-      header_text = (textNode.data for textNode in childs).join ''
-      msg.send header_text
-      paragraph = _.flatten childrenOfType(paragraphs[0], 'text')
-      paragraph_text = (textNode.data for textNode in paragraph).join ''
-      msg.send "/code " + paragraph_text
+      for item in contents
+        header = Select(item, "h3")
+        childs = _.flatten childrenOfType(header[0], 'text')
+        header_text = (textNode.data for textNode in childs).join ''
+        msg.send header_text
+        paragraphs = Select(item, "p")
+        result = ""
+        for paragraph in paragraphs
+          text = _.flatten childrenOfType(paragraph, 'text')
+          paragraph_text = (textNode.data for textNode in text).join ''
+          paragraph_text = paragraph_text + "\n"
+          result = result + paragraph_text
+        if result != ""
+          msg.send "/code " + result
 
 
 parseHTML = (html, selector) ->
