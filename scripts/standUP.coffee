@@ -99,7 +99,10 @@ module.exports = (robot) ->
   # Stores a standup in the brain.
   saveStandup = (room, dayOfWeek, time, utcOffset, location, msg) ->
     if !timeIsValid time
-      msg.send "Sorry, but I couldn't find a time to create the standup at."
+      msg.send "Sorry, but I couldn't find a time to create a reminder at."
+      return
+    if (!location)
+      msg.send "Sorry, but I couldn't find a message to create a reminder."
       return
 
     standups = getStandups()
@@ -112,7 +115,7 @@ module.exports = (robot) ->
     standups.push newStandup
     updateBrain standups
     displayDate = dayOfWeek or 'weekday'
-    msg.send 'Ok, from now on I\'ll remind this room to do a standup every ' + displayDate + ' at ' + time + (if location then location else '')
+    msg.send 'Ok, from now on I\'ll remind this room to do a reminder every ' + displayDate + ' at ' + time + ' with ' + location
     return
 
   # Updates the brain's standup knowledge.
@@ -126,7 +129,7 @@ module.exports = (robot) ->
     standupsToKeep = _.reject(standups, room: room)
     updateBrain standupsToKeep
     standupsCleared = standups.length - (standupsToKeep.length)
-    msg.send 'Deleted ' + standupsCleared + ' standups for ' + room
+    msg.send 'Deleted ' + standupsCleared + ' reminders for ' + room
     return
 
   # Remove specific standups for a room
@@ -142,25 +145,24 @@ module.exports = (robot) ->
     updateBrain standupsToKeep
     standupsCleared = standups.length - (standupsToKeep.length)
     if standupsCleared == 0
-      msg.send 'Nice try. You don\'t even have a standup at ' + time
+      msg.send 'Nice try. You don\'t even have a reminder at ' + time
     else
-      msg.send 'Deleted your ' + time + ' standup.'
+      msg.send 'Deleted your ' + time + ' reminder.'
     return
 
   # Responsd to the help command
   sendHelp = (msg) ->
     message = []
-    message.push 'I can remind you to do your standups!'
-    message.push 'Use me to create a standup, and then I\'ll post in this room at the times you specify. Here\'s how:'
+    message.push 'I can remind you to do your reminders!'
+    message.push 'Use me to create a reminder, and then I\'ll post in this room at the times you specify. Here\'s how:'
     message.push ''
-    message.push robot.name + ' create standup hh:mm - I\'ll remind you to standup in this room at hh:mm every weekday.'
-    message.push robot.name + ' create standup hh:mm UTC+2 - I\'ll remind you to standup in this room at hh:mm UTC+2 every weekday.'
-    message.push robot.name + ' create standup hh:mm at location/url - Creates a standup at hh:mm (UTC) every weekday for this chat room with a reminder for a physical location or url'
-    message.push robot.name + ' create standup Monday@hh:mm UTC+2 - I\'ll remind you to standup in this room at hh:mm UTC+2 every Monday.'
-    message.push robot.name + ' list standups - See all standups for this room.'
-    message.push robot.name + ' list all standups- Be nosey and see when other rooms have their standup.'
-    message.push robot.name + ' delete standup hh:mm - If you have a standup at hh:mm, I\'ll delete it.'
-    message.push robot.name + ' delete all standups - Deletes all standups for this room.'
+    message.push robot.name + ' create reminder hh:mm your message - Creates a reminder at hh:mm (UTC) every weekday for this chat room'
+    message.push robot.name + ' create reminder hh:mm UTC+2 your message - I\'ll remind you to your reminder in this room at hh:mm UTC+2 every weekday.'
+    message.push robot.name + ' create reminder Monday@hh:mm UTC+2 your message - I\'ll remind you to your reminder in this room at hh:mm UTC+2 every Monday.'
+    message.push robot.name + ' list reminders - See all reminders for this room.'
+    message.push robot.name + ' list all reminders- Be nosey and see when other rooms have their reminder.'
+    message.push robot.name + ' delete reminder hh:mm - If you have a reminder at hh:mm, I\'ll delete it.'
+    message.push robot.name + ' delete all reminders - Deletes all reminders for this room.'
     msg.send message.join('\n')
     return
 
@@ -168,14 +170,14 @@ module.exports = (robot) ->
   listStandupsForRoom = (room, msg) ->
     standups = getStandupsForRoom(findRoom(msg))
     if standups.length == 0
-      msg.send 'Well this is awkward. You haven\'t got any standups set :-/'
+      msg.send 'Well this is awkward. You haven\'t got any reminders set :-/'
     else
-      standupsText = [ 'Here\'s your standups:' ].concat(_.map(standups, (standup) ->
+      standupsText = [ 'Here\'s your reminders:' ].concat(_.map(standups, (standup) ->
         text =  'Time: ' + standup.time
         if standup.utc
           text += ' UTC' + standup.utc
         if standup.location
-          text +=', Location: '+ standup.location
+          text +=', Message: '+ standup.location
         text
       ))
       msg.send standupsText.join('\n')
@@ -186,12 +188,12 @@ module.exports = (robot) ->
     if standups.length == 0
       msg.send 'No, because there aren\'t any.'
     else
-      standupsText = [ 'Here\'s the standups for every room:' ].concat(_.map(standups, (standup) ->
+      standupsText = [ 'Here\'s the reminders for every room:' ].concat(_.map(standups, (standup) ->
         text =  'Room: ' + standup.room + ', Time: ' + standup.time
         if standup.utc
           text += ' UTC' + standup.utc
         if standup.location
-          text +=', Location: '+ standup.location
+          text +=', Message: '+ standup.location
         text
       ))
       msg.send standupsText.join('\n')
@@ -200,7 +202,7 @@ module.exports = (robot) ->
   'use strict'
   # Constants.
   STANDUP_MESSAGES = [
-    '@here please remember to move/update your cards for offshore, thanks!'
+    '@here '
   ]
   PREPEND_MESSAGE = process.env.HUBOT_STANDUP_PREPEND or ''
   if PREPEND_MESSAGE.length > 0 and PREPEND_MESSAGE.slice(-1) != ' '
@@ -211,7 +213,7 @@ module.exports = (robot) ->
   new cronJob('1 * * * * 1-5', checkStandups, null, true)
 
   # Global regex should match all possible options
-  robot.respond /(.*?)standups? ?(?:([A-z]*)\s?\@\s?)?((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9])?(?: UTC([- +]\d\d?))?(.*)/i, (msg) ->
+  robot.respond /(.*?)reminders? ?(?:([A-z]*)\s?\@\s?)?((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9])?(?: UTC([- +]\d\d?))?(.*)/i, (msg) ->
     action = msg.match[1].trim().toLowerCase()
     dayOfWeek = msg.match[2]
     time = msg.match[3]
